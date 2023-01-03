@@ -42,11 +42,11 @@ class CategorySeeder extends Seeder
             ],
             [
                 'name'=>'Sub Sub B2-1',
-                'category_id'=>4
+                'category_id'=>6
             ],
             [
                 'name'=>'Sub Sub  B2-2',
-                'category_id'=>4
+                'category_id'=>6
             ]
             ];
             foreach ($categories as $key => $value){
