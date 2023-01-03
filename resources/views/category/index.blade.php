@@ -7,7 +7,7 @@
         <div class="col-md-2">
             <div class="form-group">
                 <label for="Main-Category">Main Category : </label>
-                <select class="custom-select mr-sm-2" name="Main-Category">
+                <select class="custom-select mr-sm-2" name="Main-Category" level ='0'>
                     <option  selected disabled>
                         Select Category...
                     </option>
@@ -17,8 +17,12 @@
                 </select>
             </div>
         </div>
+        <div name="content">
 
-        <div class="col-md-2">
+        </div>
+    </div>
+
+        {{-- <div class="col-md-2">
             <div class="form-group">
                 <label for="subcategory_id">First Sub Category : </label>
                 <select class="custom-select mr-sm-2" name="subcategory_id">
@@ -35,12 +39,14 @@
 
                 </select>
             </div>
-        </div>
+        </div> --}}
     </div>
         <script src="https://code.jquery.com/jquery-3.5.0.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
 <script>
     $(document).ready(function () {
-        $('select[name="Main-Category"]').on('change', function () {
+        $('select').on('change', function () {
+            var level=$(this).attr('level');
+            ++level;
             var maincategory_id = $(this).val();
             if (maincategory_id) {
                 $.ajax({
@@ -48,12 +54,14 @@
                     type: "GET",
                     dataType: "json",
                     success: function (data) {
-                        $('select[name="subcategory_id"]').empty();
-                        $('select[name="subcategory_id"]').append('<option selected disabled >Select Sub Category...</option>');
+                        if(data.length>0){
+                        $('div[name="content"]').empty();
+                        $('div[name="content"]').append('<div class="col-md-2" level='+(level)+'><div class="form-group"><label for="Category-'+maincategory_id+'">Sub Category : </label><select class="custom-select mr-sm-2" name="Category-'+maincategory_id+'" level='+(level)+'><option  selected disabled>Select Category...</option></select></div></div>');
+                        // $('select[name="subcategory_id"]').append('<option selected disabled >Select Sub Category...</option>');
                         $.each(data, function (key, value) {
-                            $('select[name="subcategory_id"]').append('<option value="' + value.id + '">' + value.name + '</option>');
+                            $('select[name="Category-'+maincategory_id+'"]').append('<option value="' + value.id + '">' + value.name + '</option>');
                         });
-
+                    }
                     },
                 });
             }
@@ -68,20 +76,24 @@
 
 <script>
     $(document).ready(function () {
-        $('select[name="subcategory_id"]').on('change', function () {
-            var subcategory_id = $(this).val();
-            if (subcategory_id) {
+        $('div [name="content"]').on('change','select', function () {
+            var level=$(this).attr('level');
+            ++level;
+            var maincategory_id = $(this).val();
+            if (maincategory_id) {
                 $.ajax({
-                    url: "{{ URL::to('get-categories') }}/" + subcategory_id,
+                    url: "{{ URL::to('get-categories') }}/" + maincategory_id,
                     type: "GET",
                     dataType: "json",
                     success: function (data) {
-                        $('select[name="tsubcategory_id"]').empty();
-                        $('select[name="tsubcategory_id"]').append('<option selected disabled >Select Sub Category...</option>');
+                        if(data.length>0){
+                        $('div[level="'+(level)+'"]').remove();
+                        $('div[level="'+(level-1)+'"]').append('<div class="col-md-2" level='+(level)+'><div class="form-group"><label for="Category-'+maincategory_id+'">Sub Category : </label><select class="custom-select mr-sm-2" name="Category-'+maincategory_id+'" level='+(level)+'><option  selected disabled>Select Category...</option></select></div></div>');
+                        // $('select[name="subcategory_id"]').append('<option selected disabled >Select Sub Category...</option>');
                         $.each(data, function (key, value) {
-                            $('select[name="tsubcategory_id"]').append('<option value="' + value.id + '">' + value.name + '</option>');
+                            $('select[name="Category-'+maincategory_id+'"]').append('<option value="' + value.id + '">' + value.name + '</option>');
                         });
-
+                    }
                     },
                 });
             }
@@ -91,7 +103,7 @@
             }
         });
     });
-</script>
+    </script>
 
 </body>
 </html>
